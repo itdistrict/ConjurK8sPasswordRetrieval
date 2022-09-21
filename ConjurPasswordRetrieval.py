@@ -1,6 +1,7 @@
 import requests
 import time
 import base64
+import os
 
 requests.packages.urllib3.disable_warnings() 
 try:
@@ -8,16 +9,22 @@ try:
         print("read token file")
         f = open("/run/conjur/access-token", "r")
         token = (base64.b64encode((f.read()).encode('ascii'))).decode('ascii')
+        app_url = os.getenv("CONJUR_APPLIANCE_URL")
+        account = os.getenv("CONJUR_ACCOUNT")
+        pem = os.getenv("CONJUR_SSL_CERTIFICATE")
+        f = open("conjur.pem", "w")
+        f.write(pem)
+        f.close()
         print("token received and base64 encoded")
-        url = 'https://conjur-follower.cyberark-conjur.svc.cluster.local/secrets/default/variable/secrets/username'
+        url = app_url+'/secrets/'+account+'/variable/secrets/username'
         headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8', 'Authorization': 'Token token=\"' + token + '\"'}
         print("start requesting username")
-        r = requests.get(url,headers=headers, verify=False)
+        r = requests.get(url,headers=headers, verify="conjur.pem")
         if r.status_code == 200:
             print("Username: " +r.content.decode())
         else:
             print("HTTP-Error: " + str(r.status_code))
-        url = 'https://conjur-follower.cyberark-conjur.svc.cluster.local/secrets/default/variable/secrets/password'
+        url = app_url+'/secrets/'+account+'/variable/secrets/password'
         print("start requesting password")
         r = requests.get(url,headers=headers, verify=False)
         if r.status_code == 200:
