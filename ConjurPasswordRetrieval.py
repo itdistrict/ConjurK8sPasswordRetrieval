@@ -9,13 +9,15 @@ try:
         print("read token file")
         f = open("/run/conjur/access-token", "r")
         token = (base64.b64encode((f.read()).encode('ascii'))).decode('ascii')
+        print("token received and base64 encoded")
+        print("load variables from env")
         app_url = os.getenv("CONJUR_APPLIANCE_URL")
         account = os.getenv("CONJUR_ACCOUNT")
         pem = os.getenv("CONJUR_SSL_CERTIFICATE")
         f = open("conjur.pem", "w")
         f.write(pem)
         f.close()
-        print("token received and base64 encoded")
+        print("environment loaded")
         url = app_url+'/secrets/'+account+'/variable/secrets/username'
         headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8', 'Authorization': 'Token token=\"' + token + '\"'}
         print("start requesting username")
@@ -32,5 +34,7 @@ try:
         else:
             print("HTTP-Error: " + str(r.status_code))
         time.sleep(10)
-except (FileNotFoundError, IOError):
+except FileNotFoundError:
        print("Token file not found")
+except IOError as err:
+       print("IO error: {0}".format(err))
