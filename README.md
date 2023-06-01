@@ -17,4 +17,4 @@ https://hub.docker.com/r/itdistrict/conjur-k8s-password-retrieval
 
 
 # Next changes
-We will maintain the docker image will update it regularly.
+We will maintain the docker image and will update it regularly.
