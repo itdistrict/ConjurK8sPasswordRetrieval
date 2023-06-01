@@ -1,4 +1,4 @@
-FROM python:3.9-alpine
+FROM python:3.11-alpine
 RUN adduser -D -s /bin/bash app_user
 WORKDIR /home/app_user
 COPY requirements.txt ./
